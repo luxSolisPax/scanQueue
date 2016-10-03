@@ -3,7 +3,10 @@
 include 'passwords.php';
 $errorHandler = fopen("error.txt", "a") or die ("unable to open error log");
 $logFile = fopen("log.txt", "w+	") or die("unable to open log file");
-$groupDetailsIDs = array("130", "1", "17", "29", "5", "13", "277", "37", "16", "12", "69", "25", "157", "202", "14", "278", "114", "26", "38", "42"); 
+$groupDetailsIDs = array("87", "130", "156", "1", "2", "17", "29", "5", "13", "277", "37", "16", "12", "69", "25", "157", "202", "14", "278", "114", "26", "38", "42", "272", "273", "4");
+
+
+
 //45 Cloud Provision 
 //61 MS Cloud Provision
 //60 Cloud Instance Upgrade
@@ -15,7 +18,6 @@ $groupDetailsIDs = array("130", "1", "17", "29", "5", "13", "277", "37", "16", "
 set_time_limit(0);
 date_default_timezone_set('America/Chicago');
 
-$index = 1;
 //timestamp
 //date("l jS \of F Y h:i:s A", time()) . PHP_EOL	
 
@@ -33,7 +35,6 @@ function scanQueue($theArray){
 	foreach ($theArray as $key => $value) {
 		$recentQueueKey = recursive_array_search($value["txnID"], $recentQueue);
 		if($recentQueueKey !== false ) {
-			//unset($recentQueue[$recentQueueKey]);
 			if($recentQueue[$recentQueueKey][0] === $theArray[$key][0]){
 				unset($recentQueue[$recentQueueKey]);
 			} else {
@@ -53,7 +54,6 @@ function scanQueue($theArray){
 	//remove irrelivant items from queue
 	foreach ($recentQueue as $key => $queueValues) {
 		$deleteThisItem = true;
-		//if txn group matches any important item, preserve
 		foreach ($groupDetailsIDs as $IDToTest) {
 			if($queueValues["groupID"] == $IDToTest){
 				$deleteThisItem = false;
@@ -154,8 +154,6 @@ function grabQueue($url, $file) {
 	if (empty($queue)) {
 		echo PHP_EOL . "error fetching queue $file " . date("l jS \of F Y h:i:s A", time()) . PHP_EOL;
 		fwrite($errorHandler, PHP_EOL . "error fetching queue $file " . date("l jS \of F Y h:i:s A", time()) . PHP_EOL);
-		fclose($errorHandler);
-		die();
 	}
 	return $queue;
 }
@@ -212,7 +210,7 @@ function sendText($payload) {
 	require_once "Mail.php";
 
 	$from = '<benjamin.kevin.fang@gmail.com>';
-	$to = '<bfang@softlayer.com>, <tramos@softlayer.com>, <oarce@us.ibm.com>'; //<hernandj@us.ibm.com>, hcbrooks@us.ibm.com, <mamorale@us.ibm.com>
+	$to = '<bfang@softlayer.com>, <gene.stalnaker@ibm.com>'; //, <tramos@softlayer.com>, <oarce@us.ibm.com>, <hcbrooks@us.ibm.com>, <hernandj@us.ibm.com>, <cim@us.ibm.com>'; // <mamorale@us.ibm.com>
 	$subject = 'transaction queue';
 	$body = "";
 
@@ -236,7 +234,7 @@ function sendText($payload) {
 	        'port' => '465',
 	        'auth' => true,
 	        'username' => 'benjamin.kevin.fang@gmail.com',
-	        'password' => $_SESSION['googleApp']; 
+	        'password' => $_SESSION['googleApp'] 
 	    ));
 
 	$mail = $smtp->send($to, $headers, $body);
